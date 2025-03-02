@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "GameObject.h"
+#include "Random.h" // Ensure this is included
 #include <set>
 #include <vector>
 
@@ -97,12 +98,13 @@ private:
 
     void SpawnWave(Player* player, uint32 areaId, uint32 count)
     {
-        printf("Spawning wave %u with %u mobs in Area %u\n", waveTracker[areaId].currentWave, count, areaId);
+        printf("Spawning wave %u with %u mobs at player position in Area %u\n", waveTracker[areaId].currentWave, count, areaId);
         for (uint32 i = 0; i < count; ++i)
         {
-            float x = player->GetPositionX() + urand(-5, 5); // Use urand for safer random
-            float y = player->GetPositionY() + urand(-5, 5);
+            float x = player->GetPositionX();
+            float y = player->GetPositionY();
             float z = player->GetPositionZ();
+            printf("Attempting to spawn wolf %u/%u at X: %.2f, Y: %.2f, Z: %.2f in Area %u\n", i + 1, count, x, y, z, areaId);
             Creature* mob = player->SummonCreature(69, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 600000); // 10 minutes
             if (mob)
             {
