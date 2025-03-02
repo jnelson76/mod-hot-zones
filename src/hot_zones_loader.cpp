@@ -5,7 +5,7 @@ extern void AddSC_HotZones();
 
 void Addmod_hot_zonesScripts()
 {
-    if (!sConfigMgr->LoadModuleConfig("hot_zones.conf"))
+    if (!sConfigMgr->LoadModulesConfigs())
         sLog->outError("HotZones", "Failed to load hot_zones.conf");
     AddSC_HotZones();
 }
