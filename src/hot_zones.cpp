@@ -110,7 +110,7 @@ private:
                 mob->SetBaseHealth(mob->GetBaseHealth() * 2);
                 mob->SetBaseDamage(mob->GetBaseDamage() * 1.5f);
                 mob->loot.clear();
-                mob->loot.AddItem(LootStoreItem(5404, 0, 50, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Serpent's Shoulders
+                mob->loot.AddItem(LootStoreItem(5404, 0, 50, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Serpenat's Shoulders
                 mob->loot.AddItem(LootStoreItem(13084, 0, 20, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Kaleidoscope Chain
             }
         }
