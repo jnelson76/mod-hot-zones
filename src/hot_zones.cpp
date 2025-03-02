@@ -13,16 +13,17 @@ class HotZones : public CreatureScript
 public:
     HotZones() : CreatureScript("HotZones") {}
 
-    void OnCreatureCreate(Creature* creature) override
+    void OnAllCreaturesUpdate(Creature* creature, uint32 /*diff*/) override
     {
-        if (IsHotZone(creature->GetAreaId()))
+        if (IsHotZone(creature->GetAreaId()) && !creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_ELITE))
         {
-            // Make all mobs elite
+            // Make mobs elite only once
             creature->SetElite(true);
-            creature->SetLevel(creature->GetLevel() + 5); // Boost level
-            creature->SetBaseHealth(creature->GetBaseHealth() * 2); // Double HP
-            creature->SetBaseDamage(creature->GetBaseDamage() * 1.5f); // 50% more damage
-            printf("Elite mob spawned in hot zone: %u (Area: %u)\n", creature->GetEntry(), creature->GetAreaId());
+            creature->SetLevel(creature->GetLevel() + 5);
+            creature->SetBaseHealth(creature->GetBaseHealth() * 2);
+            creature->SetBaseDamage(creature->GetBaseDamage() * 1.5f);
+            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_ELITE); // Mark as elite
+            printf("Elite mob set in hot zone: %u (Area: %u)\n", creature->GetEntry(), creature->GetAreaId());
         }
     }
 
@@ -34,7 +35,6 @@ public:
         Player* player = killer->ToPlayer();
         uint32 areaId = creature->GetAreaId();
 
-        // Check if this kill should trigger a wave
         if (waveTracker[areaId].active && waveTracker[areaId].killed >= waveTracker[areaId].currentWaveSize)
         {
             SpawnNextWave(player, areaId);
@@ -64,11 +64,12 @@ private:
 
     void LoadConfig()
     {
-        std::string zoneList = sConfigMgr->GetOption<std::string>("HotZones.Zones", "17");
-        std::stringstream ss(zoneList);
-        std::string zone;
-        while (std::getline(ss, zone, ','))
-            hotZones.insert(std::stoul(zone));
+        hotZones.insert(33); // Stranglethorn Vale for testing
+        // std::string zoneList = sConfigMgr->GetOption<std::string>("HotZones.Zones", "12");
+        // std::stringstream ss(zoneList);
+        // std::string zone;
+        // while (std::getline(ss, zone, ','))
+        //     hotZones.insert(std::stoul(zone));
 
         maxWaves = sConfigMgr->GetOption<int>("HotZones.WaveCount", 3);
         baseMobCount = sConfigMgr->GetOption<int>("HotZones.BaseMobCount", 5);
@@ -89,7 +90,7 @@ private:
         waveTracker[areaId].active = true;
         waveTracker[areaId].currentWave = 1;
         waveTracker[areaId].currentWaveSize = baseMobCount;
-        waveTracker[areaId].killed = 1; // Count the first kill
+        waveTracker[areaId].killed = 1;
         SpawnWave(player, areaId, waveTracker[areaId].currentWaveSize);
     }
 
@@ -113,20 +114,18 @@ private:
         printf("Spawning wave %u with %u mobs in Area: %u\n", waveTracker[areaId].currentWave, count, areaId);
         for (uint32 i = 0; i < count; ++i)
         {
-            // Example: Spawn a random elite (e.g., wolf entry 69)
             Creature* mob = player->SummonCreature(69, player->GetPositionX() + rand32() % 10 - 5, 
                                                   player->GetPositionY() + rand32() % 10 - 5, 
                                                   player->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
             if (mob)
             {
                 mob->SetElite(true);
-                mob->SetLevel(player->GetLevel()); // Match player level
+                mob->SetLevel(player->GetLevel());
                 mob->SetBaseHealth(mob->GetBaseHealth() * 2);
                 mob->SetBaseDamage(mob->GetBaseDamage() * 1.5f);
-                // Add rare/epic loot
                 mob->loot.clear();
-                mob->loot.AddItem(LootStoreItem(5404, 0, 50, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Serpent's Shoulders (rare)
-                mob->loot.AddItem(LootStoreItem(13084, 0, 20, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Kaleidoscope Chain (epic)
+                mob->loot.AddItem(LootStoreItem(5404, 0, 50, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Serpent's Shoulders
+                mob->loot.AddItem(LootStoreItem(13084, 0, 20, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Kaleidoscope Chain
             }
         }
     }
