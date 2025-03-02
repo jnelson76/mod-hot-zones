@@ -1,6 +1,6 @@
 #include "ScriptMgr.h"
 #include "Config.h"
-#include "Log.h" // Add this for LOG_ERROR
+#include "Log.h"
 
 extern void AddSC_HotZones();
 
