@@ -8,17 +8,16 @@
 #include <set>
 #include <vector>
 
-class HotZones : public CreatureScript
+class HotZones : public PlayerScript
 {
 public:
-    HotZones() : CreatureScript("HotZones") {}
+    HotZones() : PlayerScript("HotZones") {}
 
-    void OnCreatureDeath(Creature* creature, Unit* killer) override
+    void OnPlayerCreatureKill(Player* player, Creature* creature) override
     {
-        if (!killer || !killer->IsPlayer() || !IsHotZone(creature->GetAreaId()))
+        if (!player || !creature || !IsHotZone(creature->GetAreaId()))
             return;
 
-        Player* player = killer->ToPlayer();
         uint32 areaId = creature->GetAreaId();
 
         if (waveTracker[areaId].active && waveTracker[areaId].killed >= waveTracker[areaId].currentWaveSize)
@@ -50,7 +49,7 @@ private:
 
     void LoadConfig()
     {
-        hotZones.insert(33); // Stranglethorn Vale for testing
+        hotZones.insert(33); // Stranglethorn Vale
         maxWaves = sConfigMgr->GetOption<int>("HotZones.WaveCount", 3);
         baseMobCount = sConfigMgr->GetOption<int>("HotZones.BaseMobCount", 5);
     }
