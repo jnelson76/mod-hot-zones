@@ -100,30 +100,29 @@ private:
         printf("Spawning wave %u with %u mobs in Area %u\n", waveTracker[areaId].currentWave, count, areaId);
         for (uint32 i = 0; i < count; ++i)
         {
-            float x = player->GetPositionX() + rand32() % 10 - 5;
-            float y = player->GetPositionY() + rand32() % 10 - 5;
+            float x = player->GetPositionX() + urand(-5, 5); // Use urand for safer random
+            float y = player->GetPositionY() + urand(-5, 5);
             float z = player->GetPositionZ();
-            Creature* mob = player->SummonCreature(69, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 600000);
+            Creature* mob = player->SummonCreature(69, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 600000); // 10 minutes
             if (mob)
             {
                 printf("Spawned wolf %u/%u at X: %.2f, Y: %.2f, Z: %.2f in Area %u\n", i + 1, count, x, y, z, areaId);
-                mob->SetLevel(player->GetLevel() + 10); // Tougher level
-                mob->SetMaxHealth(mob->GetMaxHealth() * 5); // 5x health
-                mob->SetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE, mob->GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE) * 3.0f); // 3x damage
+                mob->SetLevel(player->GetLevel() + 10);
+                mob->SetMaxHealth(mob->GetMaxHealth() * 5);
+                mob->SetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE, mob->GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE) * 3.0f);
                 mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
                 mob->SetFaction(16);
                 mob->SetInCombatWith(player);
                 mob->AI()->AttackStart(player);
+                printf("Wolf %u/%u set to attack player in Area %u\n", i + 1, count, areaId);
                 mob->loot.clear();
                 mob->loot.AddItem(LootStoreItem(5404, 0, 100.0f, 0, false, 1, 1, 0)); // Serpent's Shoulders, 100%
-                mob->loot.AddItem(LootStoreItem(13084, 0, 50.0f, 0, false, 1, 1, 0)); // Kaleidoscope Chain, 50%
+                mob->loot.AddItem(LootStoreItem(13084, 0, 50.0f, 0, false, 1, 1, 0));  // Kaleidoscope Chain, 50%
             }
             else
             {
                 printf("Failed to spawn wolf %u/%u in Area %u\n", i + 1, count, areaId);
             }
-            // Stagger spawns slightly
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
     }
 };
