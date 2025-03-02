@@ -20,6 +20,9 @@ public:
 
         uint32 areaId = creature->GetAreaId();
 
+        printf("Killed mob in Area %u: active=%d, killed=%u, currentWaveSize=%u\n", 
+               areaId, waveTracker[areaId].active, waveTracker[areaId].killed, waveTracker[areaId].currentWaveSize);
+
         if (waveTracker[areaId].active && waveTracker[areaId].killed >= waveTracker[areaId].currentWaveSize)
         {
             SpawnNextWave(player, areaId);
@@ -31,7 +34,7 @@ public:
         else
         {
             waveTracker[areaId].killed++;
-            printf("Mob killed in wave: %u/%u (Area: %u)\n", waveTracker[areaId].killed, waveTracker[areaId].currentWaveSize, areaId);
+            printf("Incremented killed: %u/%u in Area %u\n", waveTracker[areaId].killed, waveTracker[areaId].currentWaveSize, areaId);
         }
     }
 
@@ -70,6 +73,8 @@ private:
         waveTracker[areaId].currentWave = 1;
         waveTracker[areaId].currentWaveSize = baseMobCount;
         waveTracker[areaId].killed = 1;
+        printf("Starting waves in Area %u: wave=%u, size=%u, killed=%u\n", 
+               areaId, waveTracker[areaId].currentWave, waveTracker[areaId].currentWaveSize, waveTracker[areaId].killed);
         SpawnWave(player, areaId, waveTracker[areaId].currentWaveSize);
     }
 
@@ -79,35 +84,44 @@ private:
         if (waveTracker[areaId].currentWave > maxWaves)
         {
             waveTracker[areaId].active = false;
-            printf("Waves completed in Area: %u\n", areaId);
+            printf("Waves completed in Area %u\n", areaId);
             return;
         }
 
         waveTracker[areaId].currentWaveSize = baseMobCount * waveTracker[areaId].currentWave;
         waveTracker[areaId].killed = 0;
+        printf("Next wave in Area %u: wave=%u, size=%u, killed reset to %u\n", 
+               areaId, waveTracker[areaId].currentWave, waveTracker[areaId].currentWaveSize, waveTracker[areaId].killed);
         SpawnWave(player, areaId, waveTracker[areaId].currentWaveSize);
     }
 
     void SpawnWave(Player* player, uint32 areaId, uint32 count)
     {
-        printf("Spawning wave %u with %u mobs in Area: %u\n", waveTracker[areaId].currentWave, count, areaId);
+        printf("Spawning wave %u with %u mobs in Area %u\n", waveTracker[areaId].currentWave, count, areaId);
         for (uint32 i = 0; i < count; ++i)
         {
-            Creature* mob = player->SummonCreature(69, player->GetPositionX() + rand32() % 10 - 5, 
-                                                  player->GetPositionY() + rand32() % 10 - 5, 
-                                                  player->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
+            float x = player->GetPositionX() + rand32() % 10 - 5;
+            float y = player->GetPositionY() + rand32() % 10 - 5;
+            float z = player->GetPositionZ();
+            Creature* mob = player->SummonCreature(69, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 600000); // 10 minutes
             if (mob)
             {
-                mob->SetLevel(player->GetLevel() + 5); // Slightly higher level
-                mob->SetMaxHealth(mob->GetMaxHealth() * 2); // Double health
-                mob->SetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE, mob->GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE) * 1.5f); // 50% more damage
-                mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP); // PvP flag
-                mob->SetFaction(16); // Hostile faction (e.g., hostile monster faction)
-                mob->SetInCombatWith(player); // Force combat with player
-                mob->AI()->AttackStart(player); // Start attacking player
+                printf("Spawned wolf %u/%u at X: %.2f, Y: %.2f, Z: %.2f in Area %u\n", i + 1, count, x, y, z, areaId);
+                mob->SetLevel(player->GetLevel() + 5);
+                mob->SetMaxHealth(mob->GetMaxHealth() * 2);
+                mob->SetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE, mob->GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE) * 1.5f);
+                mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+                mob->SetFaction(16);
+                mob->SetInCombatWith(player);
+                if (!mob->AI()->AttackStart(player))
+                    printf("Wolf %u/%u failed to start attack on player in Area %u\n", i + 1, count, areaId);
                 mob->loot.clear();
-                mob->loot.AddItem(LootStoreItem(5404, 0, 100, 0, false, 1, 1, 1)); // Serpent's Shoulders, 100% chance
-                mob->loot.AddItem(LootStoreItem(13084, 0, 50, 0, false, 1, 1, 1));  // Kaleidoscope Chain, 50% chance
+                mob->loot.AddItem(LootStoreItem(5404, 0, 100, 0, false, 1, 1, 1));
+                mob->loot.AddItem(LootStoreItem(13084, 0, 50, 0, false, 1, 1, 1));
+            }
+            else
+            {
+                printf("Failed to spawn wolf %u/%u in Area %u\n", i + 1, count, areaId);
             }
         }
     }
