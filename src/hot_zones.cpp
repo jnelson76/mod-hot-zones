@@ -113,8 +113,8 @@ private:
                 mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
                 mob->SetFaction(16);
                 mob->SetInCombatWith(player);
-                if (!mob->AI()->AttackStart(player))
-                    printf("Wolf %u/%u failed to start attack on player in Area %u\n", i + 1, count, areaId);
+                mob->AI()->AttackStart(player);
+                printf("Wolf %u/%u set to attack player in Area %u\n", i + 1, count, areaId);
                 mob->loot.clear();
                 mob->loot.AddItem(LootStoreItem(5404, 0, 100, 0, false, 1, 1, 1));
                 mob->loot.AddItem(LootStoreItem(13084, 0, 50, 0, false, 1, 1, 1));
