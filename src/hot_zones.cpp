@@ -8,14 +8,16 @@
 #include <set>
 #include <vector>
 
-class HotZones : public CreatureScript
+class HotZones : public WorldScript
 {
 public:
-    HotZones() : CreatureScript("HotZones") {}
+    HotZones() : WorldScript("HotZones") {}
 
-    void OnCreatureDeath(Creature* creature, Unit* killer) override
+    void OnCreatureDeath(uint64 creatureGuid, uint64 killerGuid) override
     {
-        if (!killer || !killer->IsPlayer() || !IsHotZone(creature->GetAreaId()))
+        Creature* creature = ObjectAccessor::GetCreature(*ObjectAccessor::GetWorld(), creatureGuid);
+        Unit* killer = ObjectAccessor::GetUnit(*ObjectAccessor::GetWorld(), killerGuid);
+        if (!creature || !killer || !killer->IsPlayer() || !IsHotZone(creature->GetAreaId()))
             return;
 
         Player* player = killer->ToPlayer();
@@ -50,13 +52,7 @@ private:
 
     void LoadConfig()
     {
-        hotZones.insert(33); // Stranglethorn Vale for testing
-        // std::string zoneList = sConfigMgr->GetOption<std::string>("HotZones.Zones", "12");
-        // std::stringstream ss(zoneList);
-        // std::string zone;
-        // while (std::getline(ss, zone, ','))
-        //     hotZones.insert(std::stoul(zone));
-
+        hotZones.insert(33); // Stranglethorn Vale
         maxWaves = sConfigMgr->GetOption<int>("HotZones.WaveCount", 3);
         baseMobCount = sConfigMgr->GetOption<int>("HotZones.BaseMobCount", 5);
     }
