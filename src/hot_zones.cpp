@@ -100,7 +100,7 @@ private:
             {
                 mob->SetLevel(player->GetLevel() + 5); // Slightly higher level
                 mob->SetMaxHealth(mob->GetMaxHealth() * 2); // Double health
-                mob->SetAttackPower(mob->GetAttackPower() * 1.5f); // 50% more attack power
+                mob->SetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE, mob->GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE) * 1.5f); // 50% more damage
                 mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE); // Elite-like flag
                 mob->loot.clear();
                 mob->loot.AddItem(LootStoreItem(5404, 0, 50, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Serpent's Shoulders
