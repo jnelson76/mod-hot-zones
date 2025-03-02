@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "Map.h"
 #include "GameObject.h"
-#include "Random.h" // Ensure this is included
 #include <set>
 #include <vector>
 
@@ -105,21 +104,13 @@ private:
             float y = player->GetPositionY();
             float z = player->GetPositionZ();
             printf("Attempting to spawn wolf %u/%u at X: %.2f, Y: %.2f, Z: %.2f in Area %u\n", i + 1, count, x, y, z, areaId);
-            Creature* mob = player->SummonCreature(69, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 600000); // 10 minutes
+            Creature* mob = player->SummonCreature(69, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 600000); // Use TEMPSUMMON_TIMED_DESPAWN for testing
             if (mob)
             {
                 printf("Spawned wolf %u/%u at X: %.2f, Y: %.2f, Z: %.2f in Area %u\n", i + 1, count, x, y, z, areaId);
                 mob->SetLevel(player->GetLevel() + 10);
-                mob->SetMaxHealth(mob->GetMaxHealth() * 5);
-                mob->SetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE, mob->GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE) * 3.0f);
-                mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
-                mob->SetFaction(16);
-                mob->SetInCombatWith(player);
-                mob->AI()->AttackStart(player);
-                printf("Wolf %u/%u set to attack player in Area %u\n", i + 1, count, areaId);
-                mob->loot.clear();
-                mob->loot.AddItem(LootStoreItem(5404, 0, 100.0f, 0, false, 1, 1, 0)); // Serpent's Shoulders, 100%
-                mob->loot.AddItem(LootStoreItem(13084, 0, 50.0f, 0, false, 1, 1, 0));  // Kaleidoscope Chain, 50%
+                mob->SetMaxHealth(5000); // Fixed health to test
+                printf("Wolf %u/%u spawned with health %u in Area %u\n", i + 1, count, mob->GetMaxHealth(), areaId);
             }
             else
             {
