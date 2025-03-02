@@ -64,7 +64,7 @@ private:
 
     void LoadConfig()
     {
-        std::string zoneList = sConfigMgr->GetOption<std::string>("HotZones.Zones", "12");
+        std::string zoneList = sConfigMgr->GetOption<std::string>("HotZones.Zones", "17");
         std::stringstream ss(zoneList);
         std::string zone;
         while (std::getline(ss, zone, ','))
