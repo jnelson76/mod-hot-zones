@@ -13,20 +13,6 @@ class HotZones : public CreatureScript
 public:
     HotZones() : CreatureScript("HotZones") {}
 
-    void OnAllCreaturesUpdate(Creature* creature, uint32 /*diff*/) override
-    {
-        if (IsHotZone(creature->GetAreaId()) && !creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_ELITE))
-        {
-            // Make mobs elite only once
-            creature->SetElite(true);
-            creature->SetLevel(creature->GetLevel() + 5);
-            creature->SetBaseHealth(creature->GetBaseHealth() * 2);
-            creature->SetBaseDamage(creature->GetBaseDamage() * 1.5f);
-            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_ELITE); // Mark as elite
-            printf("Elite mob set in hot zone: %u (Area: %u)\n", creature->GetEntry(), creature->GetAreaId());
-        }
-    }
-
     void OnCreatureDeath(Creature* creature, Unit* killer) override
     {
         if (!killer || !killer->IsPlayer() || !IsHotZone(creature->GetAreaId()))
