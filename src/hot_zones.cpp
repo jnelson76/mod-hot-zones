@@ -101,10 +101,13 @@ private:
                 mob->SetLevel(player->GetLevel() + 5); // Slightly higher level
                 mob->SetMaxHealth(mob->GetMaxHealth() * 2); // Double health
                 mob->SetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE, mob->GetModifierValue(UNIT_MOD_DAMAGE_MAINHAND, BASE_VALUE) * 1.5f); // 50% more damage
-                mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP); // Elite-like flag
+                mob->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP); // PvP flag
+                mob->SetFaction(16); // Hostile faction (e.g., hostile monster faction)
+                mob->SetInCombatWith(player); // Force combat with player
+                mob->AI()->AttackStart(player); // Start attacking player
                 mob->loot.clear();
-                mob->loot.AddItem(LootStoreItem(5404, 0, 50, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Serpent's Shoulders
-                mob->loot.AddItem(LootStoreItem(13084, 0, 20, 0, LOOT_MODE_DEFAULT, 0, 1, 1)); // Kaleidoscope Chain
+                mob->loot.AddItem(LootStoreItem(5404, 0, 100, 0, false, 1, 1, 1)); // Serpent's Shoulders, 100% chance
+                mob->loot.AddItem(LootStoreItem(13084, 0, 50, 0, false, 1, 1, 1));  // Kaleidoscope Chain, 50% chance
             }
         }
     }
