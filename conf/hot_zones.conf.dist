@@ -1,0 +1,20 @@
+#
+#    HotZones.Zones
+#        Description: Comma-separated list of zone IDs to become hot zones (e.g., Elwynn Forest = 12, Stranglethorn Vale = 33).
+#        Default:     12
+#
+HotZones.Zones = 12
+
+#
+#    HotZones.WaveCount
+#        Description: Number of waves to spawn in hot zones.
+#        Default:     3
+#
+HotZones.WaveCount = 3
+
+#
+#    HotZones.BaseMobCount
+#        Description: Number of mobs in the first wave (increases per wave).
+#        Default:     5
+#
+HotZones.BaseMobCount = 5
